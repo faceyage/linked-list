@@ -21,29 +21,28 @@ class LinkedList {
   //add item to start of the list
   prepend(value) {
     const node = new Node(value);
-    if (this.head) {
-      const oldHead = this.head;
-      this.head = node;
-      this.head.next = oldHead;
-    }
-    //list is empty
-    else {
-      this.head = node;
-      this.tail = node;
-    }
+    node.next = this.head;
+    this.head = node;
+
+    //if tail is empty. head and tail is same
+    if (this.tail === null) this.tail = node;
   }
 
   //removes item from end of the list
   pop() {
-    //head and tail same list has one element
+    //head and tail same list has one element so remove them first
     if (this.head === this.tail) {
       this.head = null;
       this.tail = null;
+      return;
     }
+
     let curr = this.head;
+    //run until curr is node before tail
     while (curr.next !== this.tail) {
       curr = curr.next;
     }
+
     //current is now node before tail;
     this.tail = curr;
     this.tail.next = null;
@@ -52,13 +51,13 @@ class LinkedList {
   //returns size of the list
   size() {
     let curr = this.head;
-    let size = 0;
+    let count = 0;
 
     while (curr != null) {
-      size++;
+      count++;
       curr = curr.next;
     }
-    return size;
+    return count;
   }
 
   //returns node at given index. returns null if not exist.
@@ -78,11 +77,10 @@ class LinkedList {
     let curr = this.head;
 
     while (curr !== null) {
-      if (curr.value === value) {
-        return true;
-      }
+      if (curr.value === value) return true;
       curr = curr.next;
     }
+
     return false;
   }
 
@@ -92,27 +90,24 @@ class LinkedList {
     let i = 0;
 
     while (curr !== null) {
-      if (value === curr.value) {
-        return i;
-      }
+      if (value === curr.value) return i;
       curr = curr.next;
       i++;
     }
+
     return -1;
   }
 
   //insert node to the given index
   //returns true if successfully added false if not
   insertAt(value, index) {
-    //if index is 0 we don't need to find the element before given index
-    //so add directly to the start of the list with prepend function.
+    //if index is 0 add directly
     if (index === 0) {
       this.prepend(value);
       return true;
     }
 
     const node = new Node(value);
-
     let curr = this.head;
     let i = 0;
 
@@ -129,29 +124,25 @@ class LinkedList {
     return false;
   }
 
-  //removes node at given index.
-  //returns false if index out of range
+  //removes node at given index. returns removed value.
+  //returns -1 if index is out of range
   removeAt(index) {
-    //if index is 0 then remove first element
+    //if index is 0 remove first element
     if (index === 0) {
+      const removedValue = this.head.value;
       this.head = this.head.next;
-      return true;
+      return removedValue;
     }
-    let curr = this.head;
-    let previous = null;
 
-    let i = 0;
-    while (curr !== null) {
-      if (i === index) {
-        previous.next = curr.next;
-        curr = null;
-        return true;
-      }
-      previous = curr;
-      curr = curr.next;
-      i++;
+    const previous = this.at(index - 1);
+    if (previous === null || previous.next === null) {
+      //index out of range
+      return -1;
     }
-    return false;
+    const node = previous.next; //node to remove
+    previous.next = node.next;
+
+    return node.value;
   }
 
   //returns string representation of list
@@ -181,4 +172,5 @@ linkedList.append(2);
 linkedList.append(3);
 linkedList.prepend(0);
 
+console.log(linkedList.removeAt(50));
 console.log(linkedList.toString());
